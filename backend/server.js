@@ -1,14 +1,21 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 app.use(cors());
 app.use(express.json()); 
 
 // Serve uploaded images statically
-app.use('/uploads', express.static('uploads')); 
+app.use('/uploads', express.static(uploadsDir)); 
 
 // Add this to your backend server.js
 app.post('/api/admin/login', (req, res) => {
