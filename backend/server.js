@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -22,13 +21,6 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Successfully connected to MongoDB Atlas!'))
-  .catch((err) => {
-      console.error('Failed to connect to MongoDB!');
-      console.error(err.message);
-  });
-
 app.get('/', (req, res) => {
     res.send('HamroAwaaz Backend is running!');
 });
@@ -37,6 +29,8 @@ app.get('/', (req, res) => {
 app.use('/api/reports', require('./routes/reportRoutes'));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`✓ Listening on 0.0.0.0 (all interfaces)`);
+    console.log(`✓ Accessible from Android emulator at http://10.0.2.2:${PORT}`);
 });

@@ -3,9 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, router } from 'expo-router'; // Added useFocusEffect
 import axios from 'axios';
-
-// ⚠️ CHANGE THIS TO YOUR ACTUAL IPv4 ADDRESS ⚠️
-const BACKEND_URL = 'https://battle-crunching-quintuple.ngrok-free.dev/api/reports/all';
+import { getApiBaseUrl } from '../../constants/api';
 
 export default function HomeScreen() {
   const [reports, setReports] = useState<any[]>([]);
@@ -20,14 +18,26 @@ export default function HomeScreen() {
 
   const fetchReports = async () => {
     try {
-      const response = await axios.get(BACKEND_URL, {
+      const url = `${getApiBaseUrl()}/api/reports/all`;
+      console.log('📡 Fetching from:', url);
+      const response = await axios.get(url, {
         headers: {
           'ngrok-skip-browser-warning': 'true'
-        }
+        },
+        timeout: 5000
       });
-      setReports(response.data);
-    } catch (error) {
-      console.error("Error fetching reports:", error);
+      console.log('✅ Reports loaded:', response.data);
+      setReports(Array.isArray(response.data) ? response.data : []);
+    } catch (error: any) {
+      console.error('❌ Error fetching reports:');
+      if (error.response) {
+        console.error('Response error:', error.response.status, error.response.data);
+      } else if (error.request) {
+        console.error('Network error - no response from server. Check if backend is running at:', error.config?.url);
+      } else {
+        console.error('Error:', error.message);
+      }
+      setReports([]);
     } finally {
       setLoading(false);
     }

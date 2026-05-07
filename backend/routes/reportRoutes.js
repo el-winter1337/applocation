@@ -1,7 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
-// IMPORTANT: Make sure this path points to your actual Report model
-const Report = require('../models/Report');
+const FileStore = require('../models/FileStore');
 const multer = require('multer');
 
 // Configure multer for image uploads
@@ -16,9 +15,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); 
 
 // 1. GET ALL REPORTS ROUTE
-router.get('/all', async (req, res) => {
+router.get('/all', (req, res) => {
   try {
-    const reports = await Report.find();
+    const reports = FileStore.getAllReports();
     res.json(reports);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -26,15 +25,11 @@ router.get('/all', async (req, res) => {
 });
 
 // 2. UPDATE REPORT ROUTE (Status & Officer Assignment)
-router.put('/:id', async (req, res) => {
+router.put('/:id', (req, res) => {
   try {
     const { status, assignedOfficer } = req.body;
     
-    const updatedReport = await Report.findByIdAndUpdate(
-      req.params.id, 
-      { status, assignedOfficer }, 
-      { returnDocument: 'after' }
-    );
+    const updatedReport = FileStore.updateReport(req.params.id, { status, assignedOfficer });
     
     if (!updatedReport) {
       return res.status(404).json({ success: false, message: "Report not found" });
@@ -48,11 +43,17 @@ router.put('/:id', async (req, res) => {
 });
 
 // 3. CREATE / SUBMIT REPORT HANDLER
-const createReportHandler = async (req, res) => {
+const createReportHandler = (req, res) => {
   try {
     const { category, location, latitude, longitude, description, ward, username } = req.body;
 
-    const newReport = new Report({
+    console.log('📥 Received report submission:');
+    console.log('  Category:', category);
+    console.log('  Location:', location);
+    console.log('  Description:', description);
+    console.log('  Image:', req.file ? req.file.filename : 'No image');
+
+    const newReport = FileStore.saveReport({
       category,
       location,
       latitude: latitude ? parseFloat(latitude) : undefined,
@@ -61,13 +62,15 @@ const createReportHandler = async (req, res) => {
       imageUrl: req.file ? req.file.path : undefined,
       ward,
       username,
+      status: 'Pending',
+      assignedOfficer: 'Unassigned'
     });
 
-    const saved = await newReport.save();
-    res.status(201).json({ success: true, data: saved });
+    console.log('✅ Report saved:', newReport._id);
+    res.status(201).json({ success: true, data: newReport });
   } catch (err) {
-    console.error('Error creating report:', err);
-    res.status(500).json({ success: false, message: 'Failed to create report' });
+    console.error('❌ Error creating report:', err);
+    res.status(500).json({ success: false, message: 'Failed to create report', error: err.message });
   }
 };
 

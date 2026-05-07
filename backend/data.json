@@ -1,0 +1,87 @@
+{
+  "reports": [
+    {
+      "_id": "1714123456789",
+      "category": "Road Damage",
+      "location": "Kathmandu",
+      "latitude": 27.7172,
+      "longitude": 85.324,
+      "description": "Pothole on main street causing traffic issues",
+      "imageUrl": "uploads/sample1.jpg",
+      "ward": "1",
+      "username": "john_user",
+      "status": "Pending",
+      "assignedOfficer": "Unassigned",
+      "createdAt": "2026-05-07T10:30:00.000Z"
+    },
+    {
+      "_id": "1714123456790",
+      "category": "Water Supply",
+      "location": "Lalitpur",
+      "latitude": 27.6503,
+      "longitude": 85.2863,
+      "description": "No water supply for 3 days",
+      "imageUrl": "uploads/sample2.jpg",
+      "ward": "2",
+      "username": "jane_user",
+      "status": "In Progress",
+      "assignedOfficer": "Officer Ram",
+      "createdAt": "2026-05-07T09:15:00.000Z"
+    },
+    {
+      "_id": "1714123456791",
+      "category": "Garbage",
+      "location": "Bhaktapur",
+      "latitude": 27.6743,
+      "longitude": 85.3767,
+      "description": "Garbage not collected for a week",
+      "imageUrl": "uploads/sample3.jpg",
+      "ward": "3",
+      "username": "test_user",
+      "status": "Resolved",
+      "assignedOfficer": "Officer Hari",
+      "createdAt": "2026-05-07T08:00:00.000Z"
+    },
+    {
+      "_id": "1778156993740",
+      "category": "Road Damage",
+      "location": "Test Location",
+      "latitude": 27.7172,
+      "longitude": 85.324,
+      "description": "Test submit from terminal",
+      "ward": "Ward 1",
+      "username": "terminal_test",
+      "status": "Pending",
+      "assignedOfficer": "Unassigned",
+      "createdAt": "2026-05-07T12:29:53.740Z"
+    },
+    {
+      "_id": "1778157310142",
+      "category": "Waste",
+      "location": "M8PM+XMH , Kathmandu",
+      "latitude": 27.687417162960806,
+      "longitude": 85.334129948169,
+      "description": "lalalala",
+      "imageUrl": "uploads\\1778157309942-75a98103-c61d-48ce-a2b5-ec5d3d0749d9.jpeg",
+      "ward": "Ward 21",
+      "username": "test_user",
+      "status": "Pending",
+      "assignedOfficer": "Unassigned",
+      "createdAt": "2026-05-07T12:35:10.142Z"
+    },
+    {
+      "_id": "1778157437375",
+      "category": "Drainage",
+      "location": "Unknown Location",
+      "latitude": 27.700546137562554,
+      "longitude": 85.31142672523856,
+      "description": "gsjsb",
+      "imageUrl": "uploads\\1778157437250-e90c93d6-afbe-4419-842a-462e3d573dae.jpeg",
+      "ward": "Ward 1",
+      "username": "test_user",
+      "status": "In Progress",
+      "assignedOfficer": "Hari Prasad",
+      "createdAt": "2026-05-07T12:37:17.375Z"
+    }
+  ]
+}

@@ -3,9 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import axios from 'axios';
-
-// ⚠️ CHANGE THIS TO YOUR ACTUAL IPv4 ADDRESS ⚠️
-const BACKEND_URL = 'https://battle-crunching-quintuple.ngrok-free.dev/api/reports/all';
+import { getApiBaseUrl } from '../../constants/api';
 
 export default function MyReportsScreen() {
   const [reports, setReports] = useState<any[]>([]);
@@ -20,14 +18,16 @@ export default function MyReportsScreen() {
 
   const fetchMyReports = async () => {
     try {
-      const response = await axios.get(BACKEND_URL, {
+      const url = `${getApiBaseUrl()}/api/reports/all`;
+      const response = await axios.get(url, {
         headers: {
           'ngrok-skip-browser-warning': 'true'
         }
       });
-      setReports(response.data);
+      setReports(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching reports:", error);
+      setReports([]);
     } finally {
       setLoading(false);
     }

@@ -7,9 +7,7 @@ import { router } from 'expo-router';
 import axios from 'axios';
 import MapView, { Marker } from 'react-native-maps';
 import { Picker } from '@react-native-picker/picker';
-// Ensure this matches your Admin Portal BASE_URL exactly
-const BASE_URL = 'https://battle-crunching-quintuple.ngrok-free.dev';
-const SUBMIT_URL = `${BASE_URL}/api/reports/submit`;
+import { getApiBaseUrl } from '../../constants/api';
 
 export default function ReportScreen() {
   const mapRef = useRef<MapView>(null);
@@ -145,6 +143,9 @@ export default function ReportScreen() {
     setIsLoading(true);
     try {
       const locationName = await handleLocation();
+      const submitUrl = `${getApiBaseUrl()}/api/reports/submit`;
+      console.log('📤 Submitting to:', submitUrl);
+
       const formData = new FormData();
 
       // Add text data
@@ -152,6 +153,7 @@ export default function ReportScreen() {
       formData.append('description', description);
       formData.append('location', locationName || 'Unknown Location');
       formData.append('ward', ward);
+      formData.append('username', 'test_user');
       formData.append('latitude', mapRegion.latitude.toString());
       formData.append('longitude', mapRegion.longitude.toString());
 
@@ -168,17 +170,27 @@ export default function ReportScreen() {
         } as any);
       }
 
-      await axios.post(SUBMIT_URL, formData, {
+      const response = await axios.post(submitUrl, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'ngrok-skip-browser-warning': 'true',
         },
+        timeout: 10000
       });
-      alert('Report submitted successfully!');
+      console.log('✅ Report submitted:', response.data);
+      alert('✅ Report submitted successfully!');
+      resetForm();
       router.push('/');
-    } catch (error) {
-      console.error('Error submitting report:', error);
-      alert('Failed to submit the report. Please try again.');
+    } catch (error: any) {
+      console.error('❌ Error submitting report:');
+      if (error.response) {
+        console.error('Server error:', error.response.status, error.response.data);
+      } else if (error.request) {
+        console.error('Network error - check backend URL:', error.config?.url);
+      } else {
+        console.error('Error:', error.message);
+      }
+      alert('❌ Failed to submit the report. Check console for details.');
     } finally {
       setIsLoading(false);
     }

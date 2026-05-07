@@ -1,0 +1,8 @@
+{
+  "name": "hamroaawaz-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start:all": "powershell -ExecutionPolicy Bypass -File .\\start-all.ps1"
+  }
+}

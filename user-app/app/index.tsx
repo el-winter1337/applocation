@@ -3,12 +3,24 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingVi
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
+const VALID_EMAIL = 'test@test.com';
+const VALID_PASSWORD = 'admin123';
+
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = () => {
-    router.replace('/(tabs)/home');
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (normalizedEmail === VALID_EMAIL && password === VALID_PASSWORD) {
+      setErrorMessage('');
+      router.replace('/(tabs)/home');
+      return;
+    }
+
+    setErrorMessage('Invalid credentials. Use test@test.com and admin123.');
   };
 
   return (
@@ -57,6 +69,8 @@ export default function LoginScreen() {
           <Text style={styles.signInText}>Sign In</Text>
         </TouchableOpacity>
 
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+
         <View style={styles.dividerContainer}>
           <View style={styles.line} />
           <Text style={styles.orText}>Or continue with</Text>
@@ -71,7 +85,7 @@ export default function LoginScreen() {
 
       <TouchableOpacity style={styles.signUpContainer}>
         <Text style={styles.noAccountText}>
-          Don't have an account? <Text style={styles.signUpText}>Sign Up</Text>
+          Don&apos;t have an account? <Text style={styles.signUpText}>Sign Up</Text>
         </Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
@@ -93,6 +107,7 @@ const styles = StyleSheet.create({
   forgotText: { color: '#1d3557', textAlign: 'left', marginTop: 15, marginBottom: 20, fontSize: 13, fontWeight: '500' },
   signInButton: { backgroundColor: '#1d3557', paddingVertical: 15, borderRadius: 8, alignItems: 'center' },
   signInText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  errorText: { color: '#b91c1c', fontSize: 13, fontWeight: '600', marginTop: 12, textAlign: 'center' },
   dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 25 },
   line: { flex: 1, height: 1, backgroundColor: '#eee' },
   orText: { marginHorizontal: 10, color: 'gray', fontSize: 13 },

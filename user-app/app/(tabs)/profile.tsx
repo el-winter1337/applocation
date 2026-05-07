@@ -3,9 +3,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import axios from 'axios';
+import { getApiBaseUrl } from '../../constants/api';
 
-// ⚠️ PASTE YOUR ACTIVE NGROK LINK HERE (Don't forget /api/reports/all) ⚠️
-const BACKEND_URL = 'https://battle-crunching-quintuple.ngrok-free.dev/api/reports/all';
 
 export default function ProfileScreen() {
   const [reports, setReports] = useState<any[]>([]);
@@ -20,14 +19,16 @@ export default function ProfileScreen() {
 
   const fetchMyStats = async () => {
     try {
-      const response = await axios.get(BACKEND_URL, {
+      const url = `${getApiBaseUrl()}/api/reports/all`;
+      const response = await axios.get(url, {
         headers: {
           'ngrok-skip-browser-warning': 'true'
         }
       });
-      setReports(response.data);
+      setReports(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error("Error fetching stats for profile:", error);
+      console.error("Error fetching reports:", error);
+      setReports([]);
     } finally {
       setLoading(false);
     }
