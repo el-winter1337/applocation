@@ -82,6 +82,87 @@
       "status": "In Progress",
       "assignedOfficer": "Hari Prasad",
       "createdAt": "2026-05-07T12:37:17.375Z"
+    },
+    {
+      "_id": "1778158864245",
+      "category": "Waste",
+      "location": "M8PM+XMH , Kathmandu",
+      "latitude": 27.687406178194372,
+      "longitude": 85.33416314050555,
+      "description": "hdhsjsnks",
+      "imageUrl": "uploads\\1778158864189-1d0001c4-95ec-40f1-938e-379991c5b2b4.jpeg",
+      "ward": "Ward 1",
+      "username": "test_user",
+      "status": "Pending",
+      "assignedOfficer": "Unassigned",
+      "createdAt": "2026-05-07T13:01:04.245Z"
+    },
+    {
+      "_id": "1778160151173",
+      "category": "Road Damage",
+      "location": "M8PM+XMH , Kathmandu",
+      "latitude": 27.687869021855224,
+      "longitude": 85.33552570268512,
+      "description": "bzjsja",
+      "imageUrl": "uploads\\1778160150911-a9a02ae0-5b04-4fb2-a59d-e9efd3bd73c5.jpeg",
+      "ward": "Ward 7",
+      "username": "test_user",
+      "status": "Pending",
+      "assignedOfficer": "Unassigned",
+      "createdAt": "2026-05-07T13:22:31.173Z"
+    },
+    {
+      "_id": "1778161901317",
+      "category": "Waste",
+      "location": "M8PM+XMH , Kathmandu",
+      "latitude": 27.6862257546902,
+      "longitude": 85.33688960596919,
+      "description": "bshsh",
+      "imageUrl": "uploads\\1778161901211-d627b79d-ca82-498f-90cb-a74c1b4df7eb.jpeg",
+      "ward": "Ward 1",
+      "username": "indira",
+      "userId": "1778161211446",
+      "status": "New",
+      "assignedOfficer": "Sunita Rai",
+      "createdAt": "2026-05-07T13:51:41.318Z"
+    }
+  ],
+  "users": [
+    {
+      "_id": "1",
+      "name": "ram lal",
+      "email": "test@test.com",
+      "phone": "9874563210",
+      "address": "new baneswor ",
+      "ward": "12",
+      "dob": "",
+      "gender": "Female"
+    },
+    {
+      "_id": "1778160813419",
+      "email": "indira@gmail.com",
+      "password": "password123",
+      "name": "indira meche",
+      "savedLocations": [],
+      "createdAt": "2026-05-07T13:33:33.419Z"
+    },
+    {
+      "_id": "1778161211446",
+      "email": "indira@test.com",
+      "password": "password123",
+      "name": "indira",
+      "savedLocations": [],
+      "createdAt": "2026-05-07T13:40:11.446Z"
+    }
+  ],
+  "notifications": [
+    {
+      "_id": "1778162015578",
+      "userId": "1",
+      "title": "Report Updated",
+      "message": "Your report (ID: 1778161901317) status is now New.",
+      "createdAt": "2026-05-07T13:53:35.578Z",
+      "read": false
     }
   ]
 }

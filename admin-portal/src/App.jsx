@@ -430,11 +430,94 @@ function FieldManagementView({ reports, onViewReport }) {
   );
 }
 // ==========================================
+// USER DETAIL MODAL
+// ==========================================
+function UserDetailModal({ userId, onClose }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/users/${userId}`);
+        if (res.data.success) {
+          setUser(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user details", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (userId) fetchUser();
+  }, [userId]);
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 animate-in fade-in duration-200">
+      <div className="bg-white rounded-[24px] sm:rounded-[32px] shadow-2xl w-full max-w-lg flex flex-col overflow-hidden max-h-[92vh]">
+        <div className="px-5 sm:px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+          <h2 className="text-xl font-black text-slate-800 tracking-tight flex items-center">
+            <Users className="text-blue-600 mr-2" size={20} /> Citizen Profile
+          </h2>
+          <button onClick={onClose} className="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center hover:bg-slate-100 text-slate-500 transition-colors shadow-sm">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-5 sm:p-8 overflow-y-auto">
+          {loading ? (
+            <p className="text-center text-slate-500 font-bold">Loading User Details...</p>
+          ) : !user ? (
+            <p className="text-center text-slate-500 font-bold">User Not Found.</p>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black text-2xl">
+                  {user.name ? user.name.charAt(0).toUpperCase() : "?"}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">{user.name || "Anonymous"}</h3>
+                  <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{user.email || "No Email"}</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Phone</p>
+                  <p className="font-bold text-slate-800">{user.phone || "Not Provided"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gender</p>
+                  <p className="font-bold text-slate-800">{user.gender || "Not Provided"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Address</p>
+                  <p className="font-bold text-slate-800">{user.address || "Not Provided"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ward</p>
+                  <p className="font-bold text-slate-800">{user.ward || "Not Provided"}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Date of Birth</p>
+                  <p className="font-bold text-slate-800">{user.dob || "Not Provided"}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
 // UPDATED REPORT DETAIL MODAL (Enhanced Evidence & Location)
 // ==========================================
 function ReportDetailModal({ report, onClose, onSave }) {
   const [status, setStatus] = useState(report.status || "Pending");
   const [officer, setOfficer] = useState(report.assignedOfficer || "");
+  const [showUserModal, setShowUserModal] = useState(false);
   const officersList = ["Ram Bahadur", "Sunita Rai", "Hari Prasad", "Mina Karki"];
 
   const handleSave = () => onSave(report._id, { status, assignedOfficer: officer });
@@ -443,6 +526,7 @@ function ReportDetailModal({ report, onClose, onSave }) {
   const evidenceImage = report.imageUrl ? `${API_BASE_URL}/${report.imageUrl}` : (report.image || report.photo || report.imageUri);
 
   return (
+    <>
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 animate-in fade-in duration-200">
       <div className="bg-white rounded-[24px] sm:rounded-[32px] shadow-2xl w-full max-w-5xl flex flex-col overflow-hidden max-h-[92vh]">
         
@@ -465,7 +549,16 @@ function ReportDetailModal({ report, onClose, onSave }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Reported By</p>
-                <p className="font-bold text-slate-800">{report.username || "Anonymous Citizen"}</p>
+                {report.userId ? (
+                  <button 
+                    onClick={() => setShowUserModal(true)} 
+                    className="font-bold text-blue-600 hover:text-blue-800 hover:underline flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100"
+                  >
+                    <Users size={14} className="mr-1.5" /> {report.username || "Citizen"}
+                  </button>
+                ) : (
+                  <p className="font-bold text-slate-800">{report.username || "Anonymous Citizen"}</p>
+                )}
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Date Submitted</p>
@@ -553,7 +646,7 @@ function ReportDetailModal({ report, onClose, onSave }) {
               </div>
             </div>
 
-            <div className="pt-8">
+              <div className="pt-8">
               <button 
                 onClick={handleSave} 
                 className="w-full py-4 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all transform active:scale-95 flex items-center justify-center"
@@ -565,6 +658,8 @@ function ReportDetailModal({ report, onClose, onSave }) {
         </div>
       </div>
     </div>
+    {showUserModal && <UserDetailModal userId={report.userId} onClose={() => setShowUserModal(false)} />}
+    </>
   );
 }
 // ==========================================
@@ -574,11 +669,16 @@ function LoginPage({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === "admin@hamroawaaz.gov.np" && password === "admin123") {
-      localStorage.setItem("adminAuth", "true");
-      onLogin();
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/auth/admin-login`, { email, password });
+      if (res.data.success) {
+        localStorage.setItem("adminAuth", "true");
+        onLogin();
+      }
+    } catch (err) {
+      alert("Invalid Credentials");
     }
   };
 

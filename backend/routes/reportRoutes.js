@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const FileStore = require('../models/FileStore');
 const multer = require('multer');
@@ -35,6 +35,11 @@ router.put('/:id', (req, res) => {
       return res.status(404).json({ success: false, message: "Report not found" });
     }
 
+    // Add notification when updated
+    if (status) {
+      FileStore.addNotification("1", "Report Updated", `Your report (ID: ${req.params.id}) status is now ${status}.`);
+    }
+
     res.json({ success: true, message: "Report updated successfully", data: updatedReport });
   } catch (err) {
     console.error("Error updating report:", err);
@@ -45,7 +50,7 @@ router.put('/:id', (req, res) => {
 // 3. CREATE / SUBMIT REPORT HANDLER
 const createReportHandler = (req, res) => {
   try {
-    const { category, location, latitude, longitude, description, ward, username } = req.body;
+    const { category, location, latitude, longitude, description, ward, username, userId } = req.body;
 
     console.log('📥 Received report submission:');
     console.log('  Category:', category);
@@ -62,6 +67,7 @@ const createReportHandler = (req, res) => {
       imageUrl: req.file ? req.file.path : undefined,
       ward,
       username,
+      userId,
       status: 'Pending',
       assignedOfficer: 'Unassigned'
     });

@@ -4,10 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import axios from 'axios';
 import { getApiBaseUrl } from '../../constants/api';
-
+import { getUserId } from '../../utils/auth';
 
 export default function ProfileScreen() {
   const [reports, setReports] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // Auto-refresh the data every time the user taps on the Profile tab
@@ -19,15 +20,19 @@ export default function ProfileScreen() {
 
   const fetchMyStats = async () => {
     try {
-      const url = `${getApiBaseUrl()}/api/reports/all`;
-      const response = await axios.get(url, {
-        headers: {
-          'ngrok-skip-browser-warning': 'true'
-        }
-      });
-      setReports(Array.isArray(response.data) ? response.data : []);
+      const baseUrl = getApiBaseUrl();
+      const userId = await getUserId();
+      const config = { headers: { 'ngrok-skip-browser-warning': 'true' } };
+      
+      const reportsRes = await axios.get(`${baseUrl}/api/reports/all`, config);
+      setReports(Array.isArray(reportsRes.data) ? reportsRes.data : []);
+      
+      const userRes = await axios.get(`${baseUrl}/api/users/${userId}`, config);
+      if (userRes.data.success) {
+        setUser(userRes.data.data);
+      }
     } catch (error) {
-      console.error("Error fetching reports:", error);
+      console.error("Error fetching data:", error);
       setReports([]);
     } finally {
       setLoading(false);
@@ -44,11 +49,11 @@ export default function ProfileScreen() {
   };
 
   const menuItems = [
-    { icon: 'person-outline', title: 'Edit Profile' },
-    { icon: 'notifications-outline', title: 'Notifications' },
-    { icon: 'location-outline', title: 'Saved Locations' },
-    { icon: 'settings-outline', title: 'Settings' },
-    { icon: 'help-circle-outline', title: 'Help & Support' },
+    { icon: 'person-outline', title: 'Edit Profile', route: '/profile-edit' },
+    { icon: 'notifications-outline', title: 'Notifications', route: '/notifications' },
+    { icon: 'location-outline', title: 'Saved Locations', route: '/saved-locations' },
+    { icon: 'settings-outline', title: 'Settings', route: '/settings' },
+    { icon: 'help-circle-outline', title: 'Help & Support', route: '/help' },
   ];
 
   return (
@@ -58,8 +63,8 @@ export default function ProfileScreen() {
         <View style={styles.avatarPlaceholder}>
           <Ionicons name="person" size={40} color="#1d3557" />
         </View>
-        <Text style={styles.userName}>Test User</Text>
-        <Text style={styles.userEmail}>user@hamroawaaz.com</Text>
+        <Text style={styles.userName}>{user ? user.name : 'Loading...'}</Text>
+        <Text style={styles.userEmail}>{user ? user.email : ''}</Text>
       </View>
 
       {/* User Stats Row (Now dynamic!) */}
@@ -98,7 +103,11 @@ export default function ProfileScreen() {
       {/* Menu Options */}
       <View style={styles.menuContainer}>
         {menuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem}>
+          <TouchableOpacity 
+            key={index} 
+            style={styles.menuItem}
+            onPress={() => router.push(item.route as any)}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons name={item.icon as any} size={22} color="gray" style={{marginRight: 15}} />
               <Text style={styles.menuItemText}>{item.title}</Text>

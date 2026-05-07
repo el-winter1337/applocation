@@ -8,6 +8,7 @@ import axios from 'axios';
 import MapView, { Marker } from 'react-native-maps';
 import { Picker } from '@react-native-picker/picker';
 import { getApiBaseUrl } from '../../constants/api';
+import { getUserId } from '../../utils/auth';
 
 export default function ReportScreen() {
   const mapRef = useRef<MapView>(null);
@@ -147,13 +148,19 @@ export default function ReportScreen() {
       console.log('📤 Submitting to:', submitUrl);
 
       const formData = new FormData();
+      const currentUserId = await getUserId();
+      
+      // Fetch current user details to get username
+      const userRes = await axios.get(`${getApiBaseUrl()}/api/users/${currentUserId}`);
+      const currentUsername = userRes.data?.data?.name || 'Citizen';
 
       // Add text data
       formData.append('category', category);
       formData.append('description', description);
       formData.append('location', locationName || 'Unknown Location');
       formData.append('ward', ward);
-      formData.append('username', 'test_user');
+      formData.append('username', currentUsername);
+      formData.append('userId', currentUserId);
       formData.append('latitude', mapRegion.latitude.toString());
       formData.append('longitude', mapRegion.longitude.toString());
 

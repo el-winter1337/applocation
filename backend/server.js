@@ -17,23 +17,10 @@ app.use(express.json());
 // Serve uploaded images statically
 app.use('/uploads', express.static(uploadsDir)); 
 
-// Add this to your backend server.js
-app.post('/api/admin/login', (req, res) => {
-  const { email, password } = req.body;
-  // For your FYP, use a simple check. In production, use a Database & JWT.
-  if (email === 'admin@hamroawaaz.gov.np' && password === 'admin123') {
-    res.json({ success: true, user: { name: 'Admin Supervisor', role: 'Super' } });
-  } else {
-    res.status(401).json({ success: false, message: 'Invalid Credentials' });
-  }
-});
-
-app.get('/', (req, res) => {
-    res.send('HamroAwaaz Backend is running!');
-});
-
-// ADD THIS NEW LINE RIGHT HERE:
+app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {

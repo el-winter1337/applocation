@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-
-const VALID_EMAIL = 'test@test.com';
-const VALID_PASSWORD = 'admin123';
+import axios from 'axios';
+import { getApiBaseUrl } from '../constants/api';
+import { saveUserId } from '../utils/auth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (normalizedEmail === VALID_EMAIL && password === VALID_PASSWORD) {
-      setErrorMessage('');
-      router.replace('/(tabs)/home');
-      return;
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${getApiBaseUrl()}/api/auth/login`, { email, password });
+      if (res.data.success) {
+        await saveUserId(res.data.user._id);
+        setErrorMessage('');
+        router.replace('/(tabs)/home');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.response?.data?.message || 'Invalid credentials.');
+    } finally {
+      setLoading(false);
     }
-
-    setErrorMessage('Invalid credentials. Use test@test.com and admin123.');
   };
 
   return (
@@ -54,11 +60,13 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter your password"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             value={password}
             onChangeText={setPassword}
           />
-          <Ionicons name="eye-outline" size={20} color="gray" style={styles.inputIconRight} />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="gray" style={styles.inputIconRight} />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity>
@@ -83,7 +91,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.signUpContainer}>
+      <TouchableOpacity style={styles.signUpContainer} onPress={() => router.push('/signup')}>
         <Text style={styles.noAccountText}>
           Don&apos;t have an account? <Text style={styles.signUpText}>Sign Up</Text>
         </Text>
